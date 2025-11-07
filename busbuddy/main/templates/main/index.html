@@ -11,14 +11,6 @@
 
   <!-- main stylesheet (served via static) -->
   <link rel="stylesheet" href="{% static 'main/style.css' %}" />
-
-  <!--conditionally showing login and logout -->
-  {% if user.is_authenticated %}
-  <a href="{% url 'logout' %}" class="nav-link">Logout</a>
-{% else %}
-  <a href="{% url 'login' %}" class="nav-link">Login</a>
-{% endif %}
-
 </head>
 <body>
   <header class="site-header">
@@ -90,7 +82,11 @@
       </nav>
 
       <div class="header-actions">
-        <a class="btn ghost" href="#">Talk to us</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-link login-link">Login</a>
+        {% endif %}
         <button id="mobile-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
@@ -125,7 +121,6 @@
         </li>
         <li class="mobile-item"><a href="#">Connected</a></li>
         <li class="mobile-item"><a href="#">Who we are</a></li>
-        <li class="mobile-item"><a class="btn block" href="#">Talk to us</a></li>
       </ul>
     </div>
   </header>
@@ -140,8 +135,8 @@
           </p>
 
           <div class="hero-ctas">
-            <a href="#" class="btn primary">Get started</a>
-            <a href="#" class="btn outline">View solutions</a>
+            <a href="{% url 'register' %}" class="btn primary">Book Your Ticket</a>
+            <a href="#" class="btn outline">Register Your Bus</a>
           </div>
 
           <ul class="features">

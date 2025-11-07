@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,13 +9,13 @@
   <!-- Google fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- main stylesheet -->
-  <link rel="stylesheet" href="style.css" />
+  <!-- main stylesheet (served via Django static) -->
+  <link rel="stylesheet" href="{% static 'main/style.css' %}" />
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="logo" href="index.html">
+      <a class="logo" href="{% url 'index' %}">
         <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
           <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -30,25 +31,34 @@
         <h1>Welcome Back</h1>
         <p class="muted">Log in to access your bookings and offers.</p>
 
-        <form action="#" method="post" class="login-form">
-          <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" id="email" name="email" required placeholder="you@example.com" />
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
           </div>
+        {% endif %}
 
+        <form method="post" action="{% url 'login' %}" class="login-form" novalidate>
+          {% csrf_token %}
           <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required placeholder="••••••••" />
+            <label for="id_username">Email or username</label>
+            <input id="id_username" name="username" required autofocus autocomplete="username" />
           </div>
-
+          <div class="form-group">
+            <label for="id_password">Password</label>
+            <input id="id_password" name="password" type="password" required autocomplete="current-password" />
+          </div>
+          <div class="form-group">
+            <a href="{% url 'password_reset' %}" class="link small">Forgot password?</a>
+          </div>
           <div class="form-actions">
             <button type="submit" class="btn primary">Login</button>
-            <a href="#" class="link small">Forgot password?</a>
           </div>
         </form>
 
         <p class="signup-text">
-          Don’t have an account? <a href="#">Sign up</a>
+          Don’t have an account? <a href="{% url 'register' %}">Sign up</a>
         </p>
       </div>
     </div>
@@ -69,6 +79,6 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="{% static 'main/script.js' %}"></script>
 </body>
 </html>

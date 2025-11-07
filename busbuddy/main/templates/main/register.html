@@ -1,0 +1,121 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register | BusBuddy</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'main/style.css' %}" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'index' %}">
+        <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
+          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-text">BusBuddy</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li class="nav-item"><a href="{% url 'index' %}" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">Login</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-link">Login</a>
+        {% endif %}
+        <button id="mobile-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+      <ul>
+        <li class="mobile-item"><a href="{% url 'index' %}">Home</a></li>
+        <li class="mobile-item"><a href="{% url 'login' %}">Login</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="register-page">
+    <div class="container form-container">
+      <div class="form-card">
+        <h2>Create an account</h2>
+        <p class="muted">Join BusBuddy to book, manage, and track your trips easily.</p>
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" action="" novalidate>
+          {% csrf_token %}
+          {% if form %}
+            {% for field in form.visible_fields %}
+              <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                  <div class="field-errors">{{ field.errors }}</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="password1">Password</label>
+              <input type="password" id="password1" name="password1" required>
+            </div>
+            <div class="form-group">
+              <label for="password2">Confirm password</label>
+              <input type="password" id="password2" name="password2" required>
+            </div>
+          {% endif %}
+
+          <button type="submit" class="btn primary full">Register</button>
+        </form>
+
+        <p class="muted small">
+          Already have an account? <a href="{% url 'login' %}">Login here</a>.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>BusBuddy</strong>
+        <p class="muted">Connecting places.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'main/script.js' %}"></script>
+</body>
+</html>
