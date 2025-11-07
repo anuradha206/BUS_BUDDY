@@ -3,16 +3,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Register Bus | BusBuddy</title>
+  <title>Bus Details | BusBuddy</title>
   <link rel="stylesheet" href="{% static 'main/style.css' %}" />
 </head>
 <body>
   <div class="container" style="padding:40px 0;">
     <div class="register-card" style="max-width:720px; margin:0 auto;">
-      <h2>Register a Bus</h2>
-      <p class="muted">Provide basic bus information and driver photo.</p>
-
-      <form method="post" enctype="multipart/form-data">
+      <h2>Add seats, route & schedule for: {{ bus }}</h2>
+      <form method="post">
         {% csrf_token %}
         {% for field in form %}
           <div class="form-group">
@@ -22,8 +20,8 @@
             {% for err in field.errors %}<div class="alert error">{{ err }}</div>{% endfor %}
           </div>
         {% endfor %}
-        <button type="submit" class="btn primary">Save and continue</button>
-        <a href="{% url 'index' %}" class="btn outline">Cancel</a>
+        <button type="submit" class="btn primary">Save details</button>
+        <a href="{% url 'index' %}" class="btn outline">Done</a>
       </form>
     </div>
   </div>

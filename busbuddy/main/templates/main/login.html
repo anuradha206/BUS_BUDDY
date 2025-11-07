@@ -40,7 +40,8 @@
         {% endif %}
 
         <form method="post" action="{% url 'login' %}" class="login-form" novalidate>
-          {% csrf_token %}
+        {% csrf_token %}
+          {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
           <div class="form-group">
             <label for="id_username">Email or username</label>
             <input id="id_username" name="username" required autofocus autocomplete="username" />
