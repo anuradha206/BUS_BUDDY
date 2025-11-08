@@ -64,3 +64,6 @@ def bus_details(request, pk):
     else:
         form = BusDetailsForm(initial={'seats': bus.seats})
     return render(request, 'main/bus_details.html', {'form': form, 'bus': bus})
+
+def search_results(request):
+    return render(request, 'main/bus_search.html')

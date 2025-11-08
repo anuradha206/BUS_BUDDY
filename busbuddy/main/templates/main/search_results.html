@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Search Results | BusBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'main/style.css' %}" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'index' %}">
+        <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
+          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-text">BusBuddy</span>
+      </a>
+      <div class="header-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-link login-link">Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container" style="padding:40px 0;">
+      <h2>Showing buses from {{ origin }} to {{ destination }}</h2>
+
+      {% if schedules %}
+        <div class="results-list">
+          {% for schedule in schedules %}
+            <div class="card" style="margin-bottom: 20px;">
+              <div class="card-header">
+                <span>{{ schedule.bus.name }}</span>
+                {% if schedule.bus.is_women_safe %}
+                  <span class="badge" style="background-color: #e53988;">Women Safe</span>
+                {% endif %}
+              </div>
+              <div class="card-body">
+                <h3>{{ schedule.route.origin }} <small>to</small> {{ schedule.route.destination }}</h3>
+                <p>Departs: <strong>{{ schedule.departure_time|time:"H:i" }}</strong> | Arrives: <strong>{{ schedule.arrival_time|time:"H:i" }}</strong></p>
+                <div class="card-meta">
+                  <div><strong>Seats</strong><br/> <span>{{ schedule.bus.seats }}</span></div>
+                  <div><strong>AC</strong><br/> <span>{% if schedule.bus.is_ac %}Yes{% else %}No{% endif %}</span></div>
+                  <div><strong>Sleeper</strong><br/> <span>{% if schedule.bus.is_sleeper %}Yes{% else %}No{% endif %}</span></div>
+                </div>
+              </div>
+              <div class="card-cta">
+                <a href="#" class="btn small primary">Book Now</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No buses found matching your criteria. Please try a different search.</p>
+      {% endif %}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><strong>BusBuddy</strong><p class="muted">Connecting places.</p></div>
+    </div>
+  </footer>
+
+  <script src="{% static 'main/script.js' %}"></script>
+</body>
+</html>

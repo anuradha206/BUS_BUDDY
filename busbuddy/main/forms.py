@@ -4,7 +4,11 @@ from .models import Bus
 class BusForm(forms.ModelForm):
     class Meta:
         model = Bus
-        fields = ['name', 'fleet_number', 'registration_number', 'driver_name', 'driver_photo']
+        fields = [
+            'bus_name', 'registration_number', 'fleet_number',
+            'is_ac', 'is_sleeper', 'total_seats',
+            'driver_name', 'driver_photo', 'is_women_safe'
+            'name', 'fleet_number', 'registration_number', 'driver_name', 'driver_photo']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Bus name', 'class': 'input'}),
             'fleet_number': forms.TextInput(attrs={'placeholder': 'Fleet number', 'class': 'input'}),

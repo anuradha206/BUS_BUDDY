@@ -134,10 +134,33 @@
             We provide global connectivity, secure cloud services, and unified communications that keep businesses running and customers connected.
           </p>
 
-          <div class="hero-ctas">
-            <a href="{% url 'register' %}" class="btn primary">Book Your Ticket</a>
-            <a href="bus_register.html" class="btn outline">Register Your Bus</a>
-          </div>
+          <form class="search-form" method="GET" action="{% url 'search_results' %}">
+            <div class="search-group">
+              {{ search_form.origin.label_tag }}
+              {{ search_form.origin }}
+            </div>
+            <div class="search-group">
+              {{ search_form.destination.label_tag }}
+              {{ search_form.destination }}
+            </div>
+            
+            <div class="search-options">
+              <label>{{ search_form.is_ac.label }}: {{ search_form.is_ac }}</label>
+              <label>{{ search_form.is_sleeper.label }}: {{ search_form.is_sleeper }}</label>
+            </div>
+
+            <div class="search-toggle">
+              <label>{{ search_form.is_women_safe.label }}: {{ search_form.is_women_safe }}</label>
+              <small>Show buses with added security features for women.</small>
+            </div>
+
+            <div class="hero-ctas" style="margin-top: 20px;">
+              <button type="submit" class="btn primary">Search Buses</button>
+              <a href="{% url 'bus_register' %}" class="btn outline">Register Your Bus</a>
+            </div>
+          </form>
+
+
 
           <ul class="features">
             <li><strong>99.99%</strong> uptime</li>

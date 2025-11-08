@@ -454,3 +454,104 @@ body{
   transform: translateY(-1px);
   outline: none;
 }
+/* =========================
+   BUS SEARCH PAGE STYLES
+   ========================= */
+.bus-search-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  background:
+    radial-gradient(600px 300px at 10% 20%, rgba(61,209,255,0.06), transparent 8%),
+    radial-gradient(600px 300px at 90% 80%, rgba(61,209,255,0.06), transparent 8%);
+  padding: 60px 0;
+}
+
+.bus-search-container {
+  background-color: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 600px;
+}
+
+.bus-search-container h1 {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #222;
+}
+
+.bus-search-form .form-group {
+  margin-bottom: 20px;
+}
+
+.bus-search-form label {
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.bus-search-form input,
+.bus-search-form select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.bus-search-form input:focus,
+.bus-search-form select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.bus-search-form .form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.bus-search-form button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.bus-search-form button:hover {
+  background-color: #0056b3;
+}
+
+.results {
+  margin-top: 40px;
+}
+
+.result-card {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.result-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.result-card p {
+  margin: 0;
+  color: #555;
+}
