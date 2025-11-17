@@ -6,19 +6,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>BusBuddy</title>
 
-  <!-- Google fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- main stylesheet (served via static) -->
   <link rel="stylesheet" href="{% static 'main/style.css' %}" />
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
       <a class="logo" href="#">
-        <!-- simple svg wave + text logo -->
         <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
-          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" 
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
         <span class="logo-text">BusBuddy</span>
       </a>
@@ -28,56 +25,14 @@
           <li class="nav-item has-dropdown">
             <button class="nav-btn" aria-expanded="false">Bookings</button>
             <div class="dropdown">
-              <a href="#">Book Now</a>
+              <a href="{% url 'search_buses' %}">Book Now</a>
               <a href="#">My Bookings</a>
               <a href="#">See Offers</a>
             </div>
           </li>
 
-          <li class="nav-item has-dropdown">
-            <button class="nav-btn" aria-expanded="false">Sectors</button>
-            <div class="dropdown">
-              <a href="#">Healthcare</a>
-              <a href="#">Finance</a>
-              <a href="#">Education</a>
-              <a href="#">Retail</a>
-            </div>
-          </li>
-
-          <li class="nav-item has-dropdown">
-            <button class="nav-btn" aria-expanded="false">Wholesale</button>
-            <div class="dropdown">
-              <a href="#">Carrier services</a>
-              <a href="#">Interconnect</a>
-              <a href="#">Peering</a>
-            </div>
-          </li>
-
-          <li class="nav-item has-dropdown">
-            <button class="nav-btn" aria-expanded="false">Connected</button>
-            <div class="dropdown">
-              <a href="#">IoT platform</a>
-              <a href="#">Edge compute</a>
-              <a href="#">Managed devices</a>
-            </div>
-          </li>
-
-          <li class="nav-item has-dropdown">
-            <button class="nav-btn" aria-expanded="false">Who we are</button>
-            <div class="dropdown">
-              <a href="#">About</a>
-              <a href="#">Leadership</a>
-              <a href="#">Sustainability</a>
-            </div>
-          </li>
-
-          <li class="nav-item">
-            <a href="#" class="nav-link">Resources</a>
-          </li>
-
-          <li class="nav-item">
-            <a href="#" class="nav-link">Careers</a>
-          </li>
+          <li class="nav-item"><a href="#" class="nav-link">Resources</a></li>
+          <li class="nav-item"><a href="#" class="nav-link">Careers</a></li>
         </ul>
       </nav>
 
@@ -87,41 +42,7 @@
         {% else %}
           <a href="{% url 'login' %}" class="nav-link login-link">Login</a>
         {% endif %}
-        <button id="mobile-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </button>
       </div>
-    </div>
-
-    <!-- mobile menu (hidden on desktop) -->
-    <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
-      <ul>
-        <li class="mobile-item">
-          <details>
-            <summary>Our solutions</summary>
-            <a href="#">Cloud services</a>
-            <a href="#">Cybersecurity</a>
-            <a href="#">Unified communications</a>
-          </details>
-        </li>
-        <li class="mobile-item">
-          <details>
-            <summary>Sectors</summary>
-            <a href="#">Healthcare</a>
-            <a href="#">Finance</a>
-            <a href="#">Education</a>
-          </details>
-        </li>
-        <li class="mobile-item">
-          <details>
-            <summary>Wholesale</summary>
-            <a href="#">Carrier services</a>
-            <a href="#">Interconnect</a>
-          </details>
-        </li>
-        <li class="mobile-item"><a href="#">Connected</a></li>
-        <li class="mobile-item"><a href="#">Who we are</a></li>
-      </ul>
     </div>
   </header>
 
@@ -131,99 +52,39 @@
         <div class="hero-left">
           <h1 class="hero-title">Fast. Reliable. Everywhere.</h1>
           <p class="hero-text">
-            We provide global connectivity, secure cloud services, and unified communications that keep businesses running and customers connected.
+            Find, compare, and book buses across routes in seconds.
           </p>
 
-          <form class="search-form" method="GET" action="{% url 'search_results' %}">
-            <div class="search-group">
-              {{ search_form.origin.label_tag }}
-              {{ search_form.origin }}
-            </div>
-            <div class="search-group">
-              {{ search_form.destination.label_tag }}
-              {{ search_form.destination }}
-            </div>
-            
-            <div class="search-options">
-              <label>{{ search_form.is_ac.label }}: {{ search_form.is_ac }}</label>
-              <label>{{ search_form.is_sleeper.label }}: {{ search_form.is_sleeper }}</label>
-            </div>
-
-            <div class="search-toggle">
-              <label>{{ search_form.is_women_safe.label }}: {{ search_form.is_women_safe }}</label>
-              <small>Show buses with added security features for women.</small>
-            </div>
-
+          <form class="search-form" method="get" action="{% url 'search_buses' %}">
+            {{ form.as_p }}
             <div class="hero-ctas" style="margin-top: 20px;">
               <button type="submit" class="btn primary">Search Buses</button>
               <a href="{% url 'bus_register' %}" class="btn outline">Register Your Bus</a>
             </div>
           </form>
 
-
-
           <ul class="features">
             <li><strong>99.99%</strong> uptime</li>
-            <li><strong>Global</strong> coverage</li>
+            <li><strong>All India</strong> coverage</li>
             <li><strong>24/7</strong> support</li>
           </ul>
         </div>
 
         <div class="hero-right">
-          <!-- simple illustrative card to resemble screenshot layout -->
           <div class="card">
             <div class="card-header">
-              <span>Connectivity plan</span>
+              <span>Popular Route</span>
               <span class="badge">Recommended</span>
             </div>
             <div class="card-body">
-              <h3>Enterprise Fibre</h3>
-              <p>1 Gbps full-fibre connection with SLA and managed support.</p>
-              <div class="card-meta">
-                <div><strong>Latency</strong><br/> <span>6–12 ms</span></div>
-                <div><strong>Support</strong><br/> <span>24/7</span></div>
-                <div><strong>Coverage</strong><br/> <span>Global</span></div>
-              </div>
-            </div>
-            <div class="card-cta">
-              <a href="#" class="btn small">Talk to us</a>
+              <h3>Lucknow → Delhi</h3>
+              <p>AC Sleeper | ₹899 | 10:00 PM – 6:00 AM</p>
             </div>
           </div>
         </div>
       </div>
     </section>
-
-    <section class="solutions container">
-      <h2>Our solutions</h2>
-      <div class="solution-grid">
-        <article class="solution">
-          <h3>Cloud migration</h3>
-          <p>Migrate with minimal downtime and full data protection.</p>
-          <a href="#" class="link">Learn more →</a>
-        </article>
-
-        <article class="solution">
-          <h3>Cybersecurity</h3>
-          <p>Endpoint and network security tailored for your business.</p>
-          <a href="#" class="link">Learn more →</a>
-        </article>
-
-        <article class="solution">
-          <h3>Affordable</h3>
-          <p>Get the cheapest deals all at one place.</p>
-          <a href="#" class="link">Learn more →</a>
-        </article>
-      </div>
-    </section>
   </main>
-
-  <!-- floating chat button -->
-  <a class="chat-btn" href="#" aria-label="Chat with us">
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-      <path d="M4 4h16v12H7l-3 3z" fill="currentColor"></path>
-    </svg>
-    <span class="chat-text">Chat</span>
-  </a>
 
   <footer class="site-footer">
     <div class="container footer-grid">
@@ -240,7 +101,6 @@
     </div>
   </footer>
 
-  <!-- move scripts to the end for better loading -->
   <script src="{% static 'main/script.js' %}"></script>
 </body>
 </html>
