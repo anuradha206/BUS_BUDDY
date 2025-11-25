@@ -1,0 +1,38 @@
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'index' %}">
+        <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
+          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-text">BusBuddy</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li class="nav-item"><a class="nav-btn" href="{% url 'bookings' %}">Bookings</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'sectors' %}">Sectors</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'connected' %}">Connected</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'who_we_are' %}">Who we are</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn ghost" href="{% url 'login' %}">Login</a>
+
+        <button id="mobile-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+      <ul>
+        <li class="nav-item"><a class="nav-btn" href="{% url 'bookings' %}">Bookings</a></li>
+        <li class="nav-item"><a class="nav-btn" href="{% url 'sectors' %}">Sectors</a></li>
+        <li class="nav-item"><a class="nav-btn" href="{% url 'connected' %}">Connected</a></li>
+        <li class="nav-item"><a class="nav-btn" href="{% url 'who_we_are' %}">Who we are</a></li>
+        <li class="nav-item"><a class="nav-btn" href="{% url 'bookings' %}">Book your bus</a></li>
+      </ul>
+    </div>
+  </header>

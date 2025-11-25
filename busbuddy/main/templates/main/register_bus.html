@@ -1,0 +1,77 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+  <section class="hero" style="padding: 80px 0;">
+    <div class="container" style="max-width: 650px;">
+      <h1 class="hero-title" style="text-align:center;">Register Your Bus</h1>
+      <p class="hero-text" style="text-align:center; margin-bottom: 40px;">
+        Enter your bus and route details so passengers can book seats easily.
+      </p>
+
+      <div class="card" style="padding: 30px; border-radius: 12px; background: #0a1525; box-shadow: 0px 4px 14px rgba(0,0,0,0.3);">
+
+        <form method="POST" action="">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label>Bus Name</label>
+            <input type="text" name="bus_name" class="form-control" placeholder="E.g., Meghdoot" required>
+          </div>
+
+          <div class="form-group">
+            <label>Bus Number</label>
+            <input type="text" name="bus_number" class="form-control" placeholder="E.g., UP32 AB 1234" required>
+          </div>
+
+          <div class="form-group">
+            <label>From</label>
+            <input type="text" name="from_city" class="form-control" placeholder="Source city" required>
+          </div>
+
+          <div class="form-group">
+            <label>To</label>
+            <input type="text" name="to_city" class="form-control" placeholder="Destination city" required>
+          </div>
+
+            <!-- Stops Section -->
+  <div class="form-group">
+    <label>Stops (optional)</label>
+
+    <div id="stops-container">
+      <div class="stop-field">
+        <input type="text" name="stops[]" class="form-control" placeholder="Stop name (e.g., Kanpur)">
+      </div>
+    </div>
+
+    <button type="button" id="add-stop" class="btn" style="margin-top: 10px;">
+      + Add Another Stop
+    </button>
+  </div>
+
+          <div class="form-group">
+            <label>Total Seats</label>
+            <input type="number" name="total_seats" class="form-control" placeholder="E.g., 40" required>
+          </div>
+
+          <div class="form-group">
+            <label>Ticket Price (₹)</label>
+            <input type="number" name="ticket_price" class="form-control" placeholder="E.g., 499" required>
+          </div>
+
+          <div class="form-group">
+            <label>Departure Time</label>
+            <input type="time" name="departure_time" class="form-control" required>
+          </div>
+
+          <button type="submit" class="btn primary" style="width:100%; margin-top: 20px;">
+            Register Bus
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </section>
+  
+   {% endblock %}

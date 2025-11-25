@@ -1,0 +1,94 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bookings | BusBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'main/style.css' %}" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'main:index' %}">
+        <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
+          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-text">BusBuddy</span>
+      </a>
+
+      <!-- Updated navigation -->
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li class="nav-item"><a class="nav-btn" href="{% url 'bookings:bookings' %}">Bookings</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'main:sector' %}">Sectors</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'main:connected' %}">Connected</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'main:who_we_are' %}">Who we are</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn ghost" href="{% url 'main:login' %}">Login</a>
+        <button id="mobile-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+   <!-- mobile menu -->
+<div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+  <ul>
+    <li class="nav-item"><a class="nav-btn" href="{% url 'bookings:bookings' %}">Bookings</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'main:sector' %}">Sectors</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'main:connected' %}">Connected</a></li>
+          <li class="nav-item"><a class="nav-btn" href="{% url 'main:who_we_are' %}">Who we are</a></li>
+  </ul>
+</div>   <!-- ✅ correctly closed -->
+
+<!-- main content starts here -->
+<main class="booking-page">
+  <div class="container">
+    <div class="booking-card card">
+      <h1 class="hero-title" style="text-align:center; margin-bottom:10px;">Book Your Bus</h1>
+      <p class="hero-text" style="text-align:center; margin-bottom:25px;">Search and book buses across routes instantly.</p>
+
+      <form>
+        <div class="form-group">
+          <label>From</label>
+          <input type="text" placeholder="Enter departure city" required>
+        </div>
+
+        <div class="form-group">
+          <label>To</label>
+          <input type="text" placeholder="Enter destination" required>
+        </div>
+
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" required>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn primary" type="submit">Search Buses</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+<footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>BusBuddy</strong>
+        <p class="muted">Connecting places.</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{% extends "main/base.html" %}
+{% block title %}Bookings | BusBuddy{% endblock %}
+
+{% block content %}
+<div class="booking-page">
+  <div class="container">
+    <div class="booking-card card">
+      <h1 class="hero-title">Book Your Bus</h1>
+      <p class="hero-text" style="text-align:center; margin-bottom:25px;">Search and book buses across routes instantly.</p>
+
+      <form>
+        <div class="form-group">
+          <label>From</label>
+          <input type="text" placeholder="Enter departure city" required>
+        </div>
+
+        <div class="form-group">
+          <label>To</label>
+          <input type="text" placeholder="Enter destination" required>
+        </div>
+
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" required>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn primary" type="submit">Search Buses</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

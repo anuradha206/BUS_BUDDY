@@ -2,8 +2,14 @@
 // Simple interactivity: mobile menu toggle + accessible dropdown keyboard support
 
 document.addEventListener('DOMContentLoaded', function () {
-  const mobileToggle = document.getElementById('mobile-toggle');
-  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileToggle = document.getElementById("mobile-toggle");
+  const mobileMenu = document.getElementById("mobile-menu");
+
+  mobileToggle.addEventListener("click", () => {
+    const isOpen = mobileMenu.classList.toggle("open");
+    mobileToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+});
+  
   if (mobileToggle && mobileMenu) {
     mobileToggle.addEventListener('click', function () {
       const expanded = mobileToggle.getAttribute('aria-expanded') === 'true';
@@ -13,41 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    const toggleDropdown = (btn) => {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      const parent = btn.parentElement;
-      const dd = parent && parent.querySelector('.dropdown');
-      if (!dd) return;
-      if (!expanded) {
-        dd.style.display = 'block';
-        btn.setAttribute('aria-expanded', 'true');
-        const onDocClick = (ev) => {
-          if (!parent.contains(ev.target)) {
-            dd.style.display = 'none';
-            btn.setAttribute('aria-expanded', 'false');
-            document.removeEventListener('click', onDocClick);
-          }
-        };
-        setTimeout(() => document.addEventListener('click', onDocClick), 0);
-      } else {
-        dd.style.display = 'none';
-        btn.setAttribute('aria-expanded', 'false');
-      }
-    };
 
-    btn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleDropdown(btn);
-      }
-    });
-
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      toggleDropdown(btn);
-    });
-  });
 
   window.addEventListener('resize', () => {
     if (window.innerWidth <= 980) {
@@ -56,3 +28,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const container = document.getElementById("stops-container");
+  const addBtn = document.getElementById("add-stop");
+
+  addBtn.addEventListener("click", function () {
+    const newField = document.createElement("div");
+    newField.classList.add("stop-field");
+    newField.style.marginTop = "8px";
+
+    newField.innerHTML = `
+      <input type="text" name="stops[]" class="form-control" placeholder="Stop name">
+    `;
+
+    container.appendChild(newField);
+  });
+});
+

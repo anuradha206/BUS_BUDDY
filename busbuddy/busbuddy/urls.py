@@ -19,7 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('main.urls')),  
-    path('bookings/', include('bookings.urls')),
+    path('', include('main.urls')),
+    # bookings app removed — all booking/search functionality moved into `main`
 ]
-

@@ -1,6 +1,16 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
-from django.db import models
+
+class Conductor(models.Model):
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='conductor')
+    phone = models.CharField(max_length=30, blank=True)
+    license_number = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.license_number or 'no-license'}"
+
 
 class Bus(models.Model):
     bus_name = models.CharField(max_length=100)
@@ -11,7 +21,9 @@ class Bus(models.Model):
     total_seats = models.PositiveIntegerField(default=40)
     driver_name = models.CharField(max_length=100, blank=True, null=True)
     driver_photo = models.ImageField(upload_to='drivers/', blank=True, null=True)
+    # normalized field name used across forms/views/templates:
     is_women_safe = models.BooleanField(default=False)
+    conductor = models.ForeignKey(Conductor, null=True, blank=True, on_delete=models.SET_NULL, related_name='buses')
 
     def __str__(self):
         return f"{self.bus_name} ({'AC' if self.is_ac else 'Non-AC'})"

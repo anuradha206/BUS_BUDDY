@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'bookings',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +133,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
+
+# Anthropic / Claude HTTP integration (set via environment variable)
+import os as _os
+ANTHROPIC_API_KEY = _os.environ.get('ANTHROPIC_API_KEY', '')
+AI_ENABLED_MODELS = _os.environ.get('AI_ENABLED_MODELS', 'claude-haiku-4.5').split(',')

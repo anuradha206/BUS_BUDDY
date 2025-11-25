@@ -1,71 +1,22 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>BusBuddy</title>
+{% extends 'main/base.html' %}
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'main/style.css' %}" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="logo" href="#">
-        <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
-          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" 
-                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-        <span class="logo-text">BusBuddy</span>
-      </a>
-
-      <nav class="main-nav" aria-label="Main navigation">
-        <ul class="nav-list">
-          <li class="nav-item has-dropdown">
-            <button class="nav-btn" aria-expanded="false">Bookings</button>
-            <div class="dropdown">
-              <a href="{% url 'search_buses' %}">Book Now</a>
-              <a href="#">My Bookings</a>
-              <a href="#">See Offers</a>
-            </div>
-          </li>
-
-          <li class="nav-item"><a href="#" class="nav-link">Resources</a></li>
-          <li class="nav-item"><a href="#" class="nav-link">Careers</a></li>
-        </ul>
-      </nav>
-
-      <div class="header-actions">
-        {% if user.is_authenticated %}
-          <a href="{% url 'logout' %}" class="nav-link">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="nav-link login-link">Login</a>
-        {% endif %}
-      </div>
-    </div>
-  </header>
-
-  <main>
+{% block content %}
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-left">
           <h1 class="hero-title">Fast. Reliable. Everywhere.</h1>
           <p class="hero-text">
-            Find, compare, and book buses across routes in seconds.
+            We make everyday travel easier and keep bus services running smoothly.
           </p>
 
-          <form class="search-form" method="get" action="{% url 'search_buses' %}">
-            {{ form.as_p }}
-            <div class="hero-ctas" style="margin-top: 20px;">
-              <button type="submit" class="btn primary">Search Buses</button>
-              <a href="{% url 'bus_register' %}" class="btn outline">Register Your Bus</a>
-            </div>
-          </form>
+          <div class="hero-ctas">
+            <a href="{% url 'bookings' %}" class="btn primary">Book your ticket</a>
+            <a class="btn ghost" href="{% url 'register_bus' %}">Register your bus</a>
+          </div>
 
           <ul class="features">
             <li><strong>99.99%</strong> uptime</li>
-            <li><strong>All India</strong> coverage</li>
+            <li><strong>Total</strong> coverage</li>
             <li><strong>24/7</strong> support</li>
           </ul>
         </div>
@@ -73,34 +24,50 @@
         <div class="hero-right">
           <div class="card">
             <div class="card-header">
-              <span>Popular Route</span>
+              <span>Famous routes</span>
               <span class="badge">Recommended</span>
             </div>
             <div class="card-body">
-              <h3>Lucknow → Delhi</h3>
-              <p>AC Sleeper | ₹899 | 10:00 PM – 6:00 AM</p>
+              <h3>Meerut to Kanpur</h3>
+              <p>Hari travels</p>
+
+              <div class="card-meta">
+                <div><strong>Time</strong><br><span>5 hours</span></div>
+                <div><strong>Distance</strong><br><span>247km</span></div>
+                <div><strong>Price</strong><br><span>445</span></div>
+              </div>
+            </div>  
+            <div class="card-cta">
+              <a href="{% url 'login'%}" class="btn small primary">Get started</a>
             </div>
+
+          
           </div>
         </div>
       </div>
     </section>
-  </main>
 
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <strong>BusBuddy</strong>
-        <p class="muted">Connecting places.</p>
+    <section class="solutions container">
+      <h2>Our solutions</h2>
+
+      <div class="solution-grid">
+        <article class="solution">
+          <h3>Reliable</h3>
+          <p>Operates with minimal downtime and full data protection.</p>
+          <a href="#" class="link">Learn more →</a>
+        </article>
+
+        <article class="solution">
+          <h3>Security</h3>
+          <p>Choose the safest option you have.</p>
+          <a href="#" class="link">Learn more →</a>
+        </article>
+
+        <article class="solution">
+          <h3>Affordable</h3>
+          <p>Get the cheapest deals all at one place.</p>
+          <a href="#" class="link">Learn more →</a>
+        </article>
       </div>
-
-      <div class="footer-links">
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-        <a href="#">Contact</a>
-      </div>
-    </div>
-  </footer>
-
-  <script src="{% static 'main/script.js' %}"></script>
-</body>
-</html>
+    </section>
+ {% endblock %}

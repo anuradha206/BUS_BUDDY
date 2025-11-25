@@ -1,0 +1,40 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sectors | BusBuddy</title>
+
+  <link rel="stylesheet" href="{% static 'main/style.css' %}">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'index' %}">
+        <svg class="logo-mark" viewBox="0 0 120 30">
+          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20"
+                fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="logo-text">BusBuddy</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="container">
+      <h1 class="hero-title">Our Sectors</h1>
+      <p class="hero-text">We provide travel solutions for different sectors and groups.</p>
+
+      <ul class="features">
+        <li>Corporate Travel</li>
+        <li>Educational Trips</li>
+        <li>Tourism & Events</li>
+        <li>Private Bookings</li>
+      </ul>
+    </div>
+  </main>
+
+</body>
+</html>

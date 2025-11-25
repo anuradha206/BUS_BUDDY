@@ -1,0 +1,83 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BusBuddy</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'main/style.css' %}">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="{% url 'index' %}">
+        <svg class="logo-mark" viewBox="0 0 120 30">
+          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-text">BusBuddy</span>
+      </a>
+
+      <nav class="main-nav">
+        <ul class="nav-list">
+          <li><a class="nav-btn" href="{% url 'bookings' %}">Bookings</a></li>
+          <li><a class="nav-btn" href="{% url 'sectors' %}">Sectors</a></li>
+          <li><a class="nav-btn" href="{% url 'connected' %}">Connected</a></li>
+          <li><a class="nav-btn" href="{% url 'who_we_are' %}">Who we are</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        {% if user.is_authenticated %}
+          <button class="btn ghost">{{ user.username }}</button>
+        {% else %}
+          <a class="btn ghost" href="{% url 'login' %}">Login</a>
+        {% endif %}
+
+        <button id="mobile-toggle" class="hamburger" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="mobile-menu">
+      <ul>
+        <li><a class="nav-btn" href="{% url 'bookings' %}">Bookings</a></li>
+        <li><a class="nav-btn" href="{% url 'sectors' %}">Sectors</a></li>
+        <li><a class="nav-btn" href="{% url 'connected' %}">Connected</a></li>
+        <li><a class="nav-btn" href="{% url 'who_we_are' %}">Who we are</a></li>
+        <li><a class="nav-btn" href="{% url 'bookings' %}">Book your bus</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>BusBuddy❤️</strong>
+        <p class="muted">Connecting places.</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'main/script.js' %}"></script>
+</body>
+</html>
