@@ -1,70 +1,33 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bus Details | BusBuddy</title>
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="container">
+<h2>Bus Details</h2>
+<p>Name: {{ bus.name }}</p>
+<p>Number: {{ bus.number }}</p>
+<p>Total Seats: {{ bus.total_seats }}</p>
+<div class="form-group">
+    <label>AC Type</label>
+    {{ form.ac_type }}
+</div>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<div class="form-group">
+    <label>Bus Type</label>
+    {{ form.bus_type }}
+</div>
 
-  <link rel="stylesheet" href="{% static 'main/style.css' %}" />
-</head>
-<body>
 
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="logo" href="{% url 'index' %}">
-        <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
-          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span class="logo-text">BusBuddy</span>
-      </a>
-      <div class="header-actions">
-        {% if user.is_authenticated %}
-          <a href="{% url 'logout' %}" class="nav-link">Logout</a>
-        {% else %}
-          <a href="{% url 'login' %}" class="nav-link login-link">Login</a>
-        {% endif %}
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <div class="container" style="padding:40px 0;">
-      <div class="register-card" style="max-width:720px; margin:0 auto;">
-        <h2>Add seats, route & schedule for: {{ bus }}</h2>
-        <form method="post">
-          {% csrf_token %}
-          {% for field in form %}
-            <div class="form-group">
-              {{ field.label_tag }}
-              {{ field }}
-              {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
-              {% for err in field.errors %}<div class="alert error">{{ err }}</div>{% endfor %}
-            </div>
-          {% endfor %}
-          <button type="submit" class="btn primary">Save details</button>
-          <a href="{% url 'index' %}" class="btn outline">Done</a>
-        </form>
-      </div>
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <strong>BusBuddy</strong>
-        <p class="muted">Connecting places.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-        <a href="#">Contact</a>
-      </div>
-    </div>
-  </footer>
-
-  <script src="{% static 'main/script.js' %}"></script>
-</body>
-</html>
+<h3>Schedules</h3>
+{% if schedules %}
+{% for s in schedules %}
+<div class="card">
+<p>Date: {{ s.date }}</p>
+<p>Time: {{ s.time }}</p>
+<p>From: {{ s.route.start }}</p>
+<p>To: {{ s.route.end }}</p>
+</div>
+{% endfor %}
+{% else %}
+<p>No schedules added.</p>
+{% endif %}
+</div>
+{% endblock %}

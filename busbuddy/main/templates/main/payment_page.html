@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="container">
+<h2>Payment</h2>
+<p>Bus: {{ payment.booking.schedule.bus.name }}</p>
+<p>Seat Number: {{ payment.booking.seat_number }}</p>
+<p>Amount: ₹{{ payment.amount }}</p>
+<form method="POST">{% csrf_token %}
+<button type="submit">Pay Now</button>
+</form>
+</div>
+{% endblock %}

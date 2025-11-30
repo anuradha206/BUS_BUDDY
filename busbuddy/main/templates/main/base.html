@@ -34,7 +34,14 @@
 
       <div class="header-actions">
         {% if user.is_authenticated %}
-          <button class="btn ghost">{{ user.username }}</button>
+        
+        <a href="{% url 'user_dashboard' %}">
+            <button class="btn ghost">{{ user.first_name }}</button>
+        </a>
+        <a href="{% url 'logout' %}">
+        <button class="btn ghost">Logout</button>
+        </a>
+
         {% else %}
           <a class="btn ghost" href="{% url 'login' %}">Login</a>
         {% endif %}

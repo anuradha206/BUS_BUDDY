@@ -32,37 +32,48 @@
         <p class="muted">Register to start booking and tracking your buses easily.</p>
 
         <form class="login-form" method="post">
-          {% csrf_token %}
-          
-          <div class="form-group">
-            <label for="fullname">Full name</label>
-            <input type="text" id="fullname" name="fullname" placeholder="John Doe" required>
-          </div>
+    {% csrf_token %}
+    {% if messages %}
+  <div class="message-box">
+    {% for msg in messages %}
+      <p class="{% if msg.tags %}{{ msg.tags }}{% endif %}">{{ msg }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+    
+    <div class="form-group">
+        {{ form.fullname.label_tag }}
+        {{ form.fullname }}
+    </div>
 
-          <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" required>
-          </div>
+    <div class="form-group">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+    </div>
 
-          <div class="form-group">
-            <label for="phone">Phone number</label>
-            <input type="tel" id="phone" name="phone" placeholder="+91 9876543210" required>
-          </div>
+    <div class="form-group">
+        {{ form.phone.label_tag }}
+        {{ form.phone }}
+    </div>
 
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required>
-          </div>
+    <div class="form-group">
+        {{ form.password1.label_tag }}
+        {{ form.password1 }}
+    </div>
 
-          <div class="form-group">
-            <label for="confirm-password">Confirm password</label>
-            <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" required>
-          </div>
+    <div class="form-group">
+        {{ form.password2.label_tag }}
+        {{ form.password2 }}
+    </div>
 
-          <div class="form-actions">
-            <button type="submit" class="btn primary">Register</button>
-          </div>
-        </form>
+    {% if form.errors %}
+        <div class="errors">{{ form.errors }}</div>
+    {% endif %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn primary">Register</button>
+    </div>
+</form>
 
         <p class="signup-text">
           Already have an account?  

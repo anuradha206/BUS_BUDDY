@@ -37,17 +37,32 @@
             <!-- Stops Section -->
   <div class="form-group">
     <label>Stops (optional)</label>
-
     <div id="stops-container">
-      <div class="stop-field">
-        <input type="text" name="stops[]" class="form-control" placeholder="Stop name (e.g., Kanpur)">
-      </div>
+
+        <div class="stop-field" style="display:flex; gap:10px; margin-bottom:8px;">
+            <input type="text" name="stops[]" class="form-control" placeholder="Stop name">
+            <input type="time" name="stop_times[]" class="form-control" placeholder="Time">
+        </div>
+
     </div>
 
     <button type="button" id="add-stop" class="btn" style="margin-top: 10px;">
-      + Add Another Stop
+        + Add Another Stop
     </button>
-  </div>
+</div>
+<script>
+document.getElementById("add-stop").addEventListener("click", function() {
+    const container = document.getElementById("stops-container");
+    const div = document.createElement("div");
+    div.className = "stop-field";
+    div.style = "display:flex; gap:10px; margin-bottom:8px;";
+    div.innerHTML = `
+        <input type="text" name="stops[]" class="form-control" placeholder="Stop name">
+        <input type="time" name="stop_times[]" class="form-control">
+    `;
+    container.appendChild(div);
+});
+</script>
 
           <div class="form-group">
             <label>Total Seats</label>

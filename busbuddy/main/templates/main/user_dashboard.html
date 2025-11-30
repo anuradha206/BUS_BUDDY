@@ -1,0 +1,40 @@
+{% extends "main/base.html" %}
+{% block content %}
+
+<h2>Your Bookings</h2>
+
+{% if bookings %}
+    <ul>
+        {% for b in bookings %}
+            <li>
+                <strong>{{ b.schedule.route.origin }} → {{ b.schedule.route.destination }}</strong><br>
+                Bus: {{ b.schedule.bus.bus_name }}<br>
+                Seats: {{ b.seats }}<br>
+                Status:
+                {% if b.paid %}
+                    Confirmed
+                {% else %}
+                    Pending payment
+                {% endif %}
+                <br>
+                <small>{{ b.created_at }}</small>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No bookings yet.</p>
+{% endif %}
+
+<h2>Your Most Frequent Routes</h2>
+{% if frequent_routes %}
+    <ul>
+        {% for route, count in frequent_routes %}
+            <li>{{ route.0 }} → {{ route.1 }} ({{ count }} times)</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No frequent routes yet.</p>
+{% endif %}
+
+{% endblock %}

@@ -14,20 +14,21 @@ class Conductor(models.Model):
 
 class Bus(models.Model):
     bus_name = models.CharField(max_length=100)
-    registration_number = models.CharField(max_length=20, unique=True)
-    fleet_number = models.CharField(max_length=20, blank=True, null=True)
-    is_ac = models.BooleanField(default=False)
+    registration_number = models.CharField(max_length=100, unique=True)
+    fleet_number = models.CharField(max_length=50, blank=True, null=True)
+    ac_type = models.CharField(max_length=20, choices=[("AC", "AC"), ("Non-AC", "Non-AC")])
+    bus_type = models.CharField(max_length=20, choices=[("Seater", "Seater"), ("Sleeper", "Sleeper"), ("Both", "Both")])
     is_sleeper = models.BooleanField(default=False)
-    total_seats = models.PositiveIntegerField(default=40)
+    total_seats = models.IntegerField()
     driver_name = models.CharField(max_length=100, blank=True, null=True)
-    driver_photo = models.ImageField(upload_to='drivers/', blank=True, null=True)
-    # normalized field name used across forms/views/templates:
-    is_women_safe = models.BooleanField(default=False)
-    conductor = models.ForeignKey(Conductor, null=True, blank=True, on_delete=models.SET_NULL, related_name='buses')
+    driver_photo = models.ImageField(upload_to="drivers/", null=True, blank=True)
+
+    origin = models.CharField(max_length=150, blank=True, null=True)
+    destination = models.CharField(max_length=150, blank=True, null=True)
+    stops = models.TextField(blank=True, null=True)# comma separated list
 
     def __str__(self):
-        return f"{self.bus_name} ({'AC' if self.is_ac else 'Non-AC'})"
-
+        return f"{self.bus_name} ({self.registration_number})"
 
 class Route(models.Model):
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='routes')
@@ -39,11 +40,60 @@ class Route(models.Model):
         return f"{self.origin} → {self.destination}"
 
 class Schedule(models.Model):
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='schedules')
-    route = models.ForeignKey(Route, on_delete=models.SET_NULL, null=True, blank=True)
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
     departure_time = models.TimeField()
     arrival_time = models.TimeField()
-    days = models.CharField(max_length=100, help_text='Comma-separated days e.g. Mon,Tue,Wed')
+    days = models.CharField(max_length=50)  # "Mon,Tue,Wed"
 
     def __str__(self):
-        return f"{self.bus} {self.departure_time} → {self.arrival_time} ({self.days})"
+        return f"{self.bus.bus_name} {self.departure_time} → {self.arrival_time} ({self.days})"
+
+User = get_user_model()
+
+class Booking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    schedule = models.ForeignKey('Schedule', on_delete=models.CASCADE, related_name='bookings')
+    seats = models.PositiveIntegerField()
+    seat_numbers = models.CharField(max_length=200, blank=True)  # CSV like "1,2,3"
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    paid = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    cancelled = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Booking #{self.pk} by {self.user} for {self.schedule}"
+
+class Payment(models.Model):
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='payment')
+    provider = models.CharField(max_length=50, blank=True)  # 'razorpay', 'stripe'
+    provider_payment_id = models.CharField(max_length=200, blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=50, default='initiated')  # initiated, succeeded, failed
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Payment {self.provider} {self.status} for {self.booking}"
+    
+
+from django.db.models import Sum
+def seats_booked_for_schedule(schedule):
+    booked = schedule.bookings.filter(cancelled=False).aggregate(total=Sum('seats'))['total'] or 0
+    return int(booked)
+
+def seats_available(schedule):
+    return max(0, schedule.bus.total_seats - seats_booked_for_schedule(schedule))
+
+
+#for stooooopppppppsssssssssssssssssss-----------
+class Stop(models.Model):
+    route = models.ForeignKey(Route, related_name="stop_list", on_delete=models.CASCADE)
+    name = models.CharField(max_length=150)
+    time = models.TimeField()
+
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.name} ({self.time})"

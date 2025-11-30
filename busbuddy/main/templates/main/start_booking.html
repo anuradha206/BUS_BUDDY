@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<div class="container">
+<h2>Start Booking</h2>
+<p>Bus: {{ schedule.bus.name }}</p>
+<p>Date: {{ schedule.date }}</p>
+<p>Time: {{ schedule.time }}</p>
+<p>Available Seats: {{ available }}</p>
+
+
+<form method="POST">{% csrf_token %}
+<label>Select Seat</label>
+<select name="seat_number">
+{% for seat in seat_list %}
+<option value="{{ seat }}">{{ seat }}</option>
+{% endfor %}
+</select>
+<button type="submit">Continue to Payment</button>
+</form>
+</div>
+{% endblock %}

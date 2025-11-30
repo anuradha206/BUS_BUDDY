@@ -1,0 +1,37 @@
+{% extends "main/base.html" %}
+{% block content %}
+
+<h2>Conductor Dashboard</h2>
+
+<p>Here are your buses and schedules.</p>
+
+{% if buses %}
+    {% for b in buses %}
+        <div style="padding:10px;border:1px solid #ccc;margin-bottom:20px;">
+            <h3>{{ b.bus.bus_name }}</h3>
+            <p>Registration: {{ b.bus.registration_number }}</p>
+            <p>Total seats: {{ b.bus.total_seats }}</p>
+
+            <h4>Schedules</h4>
+            {% if b.schedules %}
+                <ul>
+                    {% for s in b.schedules %}
+                        <li>
+                            <strong>{{ s.route.start }} → {{ s.route.end }}</strong><br>
+                            Time: {{ s.time }}<br>
+                            Available seats: {{ s.available }}<br>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No schedules available for this bus.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>You have not registered any buses yet.</p>
+{% endif %}
+
+<a href="{% url 'register_bus' %}">Register a new bus</a>
+
+{% endblock %}

@@ -5,32 +5,40 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+
+    # Home
     path('', views.index, name='index'),
-    path('search/', views.search_results, name='search_results'),
-    path('login/', auth_views.LoginView.as_view(
-        template_name='main/login.html',
-        redirect_authenticated_user=True),
-        name='login'
-    ),
-    path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
+
+    # Search flow
+    path('search/', views.search, name='search'),                    # search page (form)
+    path('search/results/', views.search_buses, name='search_results'),  # actual results page
+
+    # Auth
+    path("login/", views.login_view, name="login"),
+
+    #path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
     path('register/', views.register, name='register'),
-    path('bus_register/', views.bus_register, name='bus_register'),
 
-    # Removed: path('bookings/', include('bookings.urls'))
+    # Conductor
+    path('conductor/register/', views.conductor_register, name='conductor_register'),
+    path('conductor/dashboard/', views.conductor_dashboard, name='conductor_dashboard'),
 
+    # Bus registration
+    path('register_bus/', views.register_bus, name='register_bus'),
+    path('bus/<int:pk>/details/', views.bus_details, name='bus_details'),
+
+    # Booking + Payments
+    path('start-booking/<int:schedule_id>/', views.start_booking, name='start_booking'),
+    path('payment/<int:payment_id>/', views.payment_page, name='payment_page'),
+    path('dashboard/', views.user_dashboard, name='user_dashboard'),
+
+    path('bookings/', views.bookings, name='bookings'),
+    # Static pages
     path('sectors/', views.sectors, name='sectors'),
     path('connected/', views.connected, name='connected'),
     path('who_we_are/', views.who_we_are, name='who_we_are'),
-    path('bus/<int:pk>/details/', views.bus_details, name='bus_details'),
-    path('password-reset/', auth_views.PasswordResetView.as_view(
-        template_name='registration/password_reset_form.html'),
-        name='password_reset'
-    ),
-    path('register_bus/', views.register_bus, name='register_bus'),
-    path('conductor/register/', views.conductor_register, name='conductor_register'),
-    # bookings search served here:
-    path('bookings/', views.search_buses, name='bookings'),
-
+    path("logout/", views.logout_user, name="logout"),
 ]
 
+# Serve media files
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
