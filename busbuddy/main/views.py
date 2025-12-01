@@ -1,6 +1,6 @@
 # main/views.py
 from collections import Counter
-from datetime import datetime, time as dtime
+from datetime import datetime, time as dtime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -96,7 +96,6 @@ def bus_details(request, pk):
     if request.method == "POST":
         form = BusDetailsForm(request.POST)
         if form.is_valid():
-
             seats = form.cleaned_data["seats"]
             origin = form.cleaned_data["origin"]
             destination = form.cleaned_data["destination"]
@@ -117,6 +116,8 @@ def bus_details(request, pk):
                 bus.total_seats = seats
                 bus.ac_type = form.cleaned_data["ac_type"]
                 bus.bus_type = form.cleaned_data["bus_type"]
+                # Update is_sleeper based on bus_type
+                bus.is_sleeper = (form.cleaned_data["bus_type"] == "Sleeper")
                 bus.save()
 
                 route = Route.objects.create(
@@ -128,7 +129,6 @@ def bus_details(request, pk):
 
                 for idx, stop_name in enumerate(stops_list):
                     time_str = stop_times[idx] if idx < len(stop_times) else "00:00"
-
                     try:
                         stop_time = datetime.strptime(time_str, "%H:%M").time()
                     except:
@@ -143,7 +143,7 @@ def bus_details(request, pk):
 
                 Schedule.objects.create(
                     bus=bus,
-                    route=route,
+                    route=route,  # Now this works
                     departure_time=departure,
                     arrival_time=arrival,
                     days=days_value,
@@ -157,84 +157,176 @@ def bus_details(request, pk):
 
     return render(request, "main/bus_details.html", {"form": form, "bus": bus})
 
-
 def _schedule_to_context(sched):
     """
-    Convert a Schedule instance into a simple dict structure the simple templates expect.
-    - bus.name -> bus.bus_name
-    - route.start -> route.origin
-    - route.end -> route.destination
-    - time -> departure_time
-    - date -> (not present on model) left empty
-    - available -> computed via seats_available()
+    Convert a Schedule instance into a simple dict structure.
     """
-    route = sched.route
+    route = sched.route if sched.route else None
     bus = sched.bus
     available = seats_available(sched)
+    
+    # Calculate duration
+    duration = get_duration(sched.departure_time, sched.arrival_time)
+    
+    # Calculate price
+    price = calculate_price(route, bus) if route else 0
+    
     return {
         "id": sched.pk,
-        "bus": {"name": getattr(bus, "bus_name", str(bus))},
-        "route": {"start": getattr(route, "origin", ""), "end": getattr(route, "destination", "")},
-        "date": "",  # no date field in model (you can add a date field later)
-        "time": getattr(sched, "departure_time", ""),
+        "bus": {
+            "name": getattr(bus, "bus_name", str(bus)),
+            "registration_number": getattr(bus, "registration_number", ""),
+            "ac_type": getattr(bus, "ac_type", ""),
+            "bus_type": getattr(bus, "bus_type", ""),
+            "is_sleeper": getattr(bus, "is_sleeper", False),
+            "driver_name": getattr(bus, "driver_name", ""),
+        },
+        "route": {
+            "start": getattr(route, "origin", "") if route else "",
+            "end": getattr(route, "destination", "") if route else "",
+            "stops": getattr(route, "stops", "") if route else "",
+        },
+        "date": sched.date.strftime("%Y-%m-%d") if sched.date else "",
+        "time": sched.departure_time.strftime("%H:%M"),
+        "arrival_time": sched.arrival_time.strftime("%H:%M"),
+        "days": sched.days or "",
         "available": available,
-        "raw_schedule": sched,  # include raw schedule when template / booking needs it
+        "duration": duration,
+        "price": price,
+        "raw_schedule": sched,
     }
-
 
 def search_buses(request):
     """
-    Search schedules that contain source -> destination in order (substring match).
-    Renders `main/bookings.html` and provides `schedules` as a list of dicts expected by the template.
+    Search schedules that match source, destination, and date/day criteria.
+    Handle both new and old parameter names.
     """
     form = BusSearchForm(request.GET or None)
     schedules_ctx = []
-
-    if form.is_valid():
-        source = form.cleaned_data["source"].strip()
-        destination = form.cleaned_data["destination"].strip()
-        bus_type = form.cleaned_data["bus_type"]
-        sleeper_type = form.cleaned_data["sleeper_type"]
-        is_woman_safe = form.cleaned_data["is_woman_safe"]
-
+    
+    # Handle both parameter naming conventions
+    source = request.GET.get('source') or request.GET.get('from_place', '')
+    destination = request.GET.get('destination') or request.GET.get('to_place', '')
+    travel_date = request.GET.get('travel_date')
+    day_filter = request.GET.get('Day') or request.GET.get('day_filter', '')
+    
+    # If form is valid or we have search parameters
+    if form.is_valid() or source or destination:
+        source = source.strip().lower()
+        destination = destination.strip().lower()
+        
+        # Handle travel_date if provided
+        travel_date_obj = None
+        if travel_date:
+            try:
+                travel_date_obj = datetime.strptime(travel_date, "%Y-%m-%d").date()
+                # Get day name from date
+                day_from_date = travel_date_obj.strftime("%A")  # Monday, Tuesday, etc.
+                day_abbr_from_date = travel_date_obj.strftime("%a")  # Mon, Tue, etc.
+            except ValueError:
+                travel_date_obj = None
+                day_from_date = None
+                day_abbr_from_date = None
+        
+        # Handle day filter if provided
+        day_abbr = None
+        if day_filter:
+            day_name_map = {
+                'Monday': 'Mon' or 'mon' or 'monday', 'Tuesday': 'Tue' or 'tue' or 'tuesday', 'Wednesday': 'Wed' or 'wed' or 'wednesday',
+                'Thursday': 'Thu' or 'tue' or 'tuesday', 'Friday': 'Fri' or 'fri' or 'friday', 'Saturday': 'Sat' or 'sat' or 'saturday', 'Sunday': 'Sun' or 'sun' or 'sunday'
+            }
+            day_abbr = day_name_map.get(day_filter, day_filter[:3])
+        
+        # Determine which day to use (priority: travel_date > Day filter)
+        target_day_abbr = None
+        if travel_date_obj and day_abbr_from_date:
+            target_day_abbr = day_abbr_from_date
+        elif day_abbr:
+            target_day_abbr = day_abbr
+        
+        # Get all schedules with related data
         candidates = Schedule.objects.select_related("bus", "route").all()
+        
         for sched in candidates:
             route = sched.route
-            if not route:
+            if not route:  # Skip if no route
                 continue
 
             # Build stops sequence: [origin, stops..., destination]
-            stops_seq = [route.origin]
+            stops_seq = [route.origin.lower()]
             if route.stops:
-                stops_seq += [s.strip() for s in route.stops.split(",") if s.strip()]
-            stops_seq.append(route.destination)
+                stops_seq += [s.strip().lower() for s in route.stops.split(",") if s.strip()]
+            stops_seq.append(route.destination.lower())
 
-            # helper: find first index matching substring (case-insensitive)
-            def find_index(term):
-                t = term.lower()
-                for idx, v in enumerate(stops_seq):
-                    if t in v.lower():
-                        return idx
-                return None
+            # Check if source and destination are in the route in correct order
+            try:
+                # Find source (partial match)
+                source_idx = -1
+                for i, stop in enumerate(stops_seq):
+                    if source in stop:
+                        source_idx = i
+                        break
+                
+                # Find destination after source
+                dest_idx = -1
+                for i in range(source_idx + 1, len(stops_seq)):
+                    if destination in stops_seq[i]:
+                        dest_idx = i
+                        break
+                
+                if source_idx == -1 or dest_idx == -1:
+                    continue
+                    
+            except Exception:
+                continue  # Source or destination not found in route
 
-            i = find_index(source)
-            j = find_index(destination)
-            if i is None or j is None or i >= j:
-                continue
+            # Check date/day matching
+            if travel_date_obj:
+                # If schedule has specific date, check if it matches
+                if sched.date:
+                    if sched.date != travel_date_obj:
+                        continue
+                # If schedule has days, check if day matches
+                elif sched.days and target_day_abbr:
+                    if target_day_abbr not in sched.days:
+                        continue
+                else:
+                    # No date or days specified, skip
+                    continue
+            elif target_day_abbr:
+                # Only day filter provided (no specific date)
+                if sched.days:
+                    if target_day_abbr not in sched.days:
+                        continue
+                else:
+                    # No days specified, skip
+                    continue
 
             bus = sched.bus
-            # bus type filters
+            
+            # Get other filter parameters
+            bus_type = request.GET.get('bus_type', '')
+            sleeper_type = request.GET.get('sleeper_type', '')
+            is_woman_safe = request.GET.get('is_woman_safe', '') == 'on'
+            
+            # Bus type filters
             if bus_type:
-                if bus_type == "AC" and not bus.is_ac:
+                if bus_type == "AC" and bus.ac_type != "AC":
                     continue
-                if bus_type == "Non-AC" and bus.is_ac:
+                if bus_type == "Non-AC" and bus.ac_type != "Non-AC":
                     continue
+            
+            # Sleeper type filters
             if sleeper_type:
                 if sleeper_type == "Sleeper" and not bus.is_sleeper:
                     continue
                 if sleeper_type == "Seater" and bus.is_sleeper:
                     continue
             
+            # Women safety filter
+            if is_woman_safe:
+                if not bus.driver_name:
+                    continue
 
             avail = seats_available(sched)
             if avail <= 0:
@@ -242,18 +334,18 @@ def search_buses(request):
 
             schedules_ctx.append(_schedule_to_context(sched))
 
-    # if the form is not valid schedules_ctx will be empty and template shows "No buses found"
     return render(
         request,
-        "main/bookings.html",
+        "main/search_results.html",
         {
             "form": form,
             "schedules": schedules_ctx,
-            "origin": request.GET.get("source", ""),
-            "destination": request.GET.get("destination", ""),
+            "origin": source,
+            "destination": destination,
+            "travel_date": travel_date,
+            "selected_day": day_filter,
         },
     )
-
 
 def search_results(request):
     source = request.GET.get("source", "")
@@ -383,9 +475,19 @@ def register_bus(request):
 
     if request.method == "POST":
         bus_name = request.POST.get("bus_name", "").strip() or "Unnamed bus"
-        registration_number = request.POST.get("registration_number", "").strip() or f"REG{int(datetime.now().timestamp())}"
+        registration_number = request.POST.get("bus_number", "").strip()
+        
+        # Check if registration number is provided
+        if not registration_number:
+            messages.error(request, "Registration number is required.")
+            return redirect("register_bus")
+        
+        # Check if registration number already exists
+        if Bus.objects.filter(registration_number=registration_number).exists():
+            messages.error(request, f"A bus with registration number '{registration_number}' already exists.")
+            return redirect("register_bus")
 
-        total_seats = request.POST.get("total_seats") or request.POST.get("seats") or 40
+        total_seats = request.POST.get("total_seats") or 40
         try:
             total_seats = int(total_seats)
         except (TypeError, ValueError):
@@ -395,12 +497,24 @@ def register_bus(request):
         to_city = request.POST.get("to_city", "").strip() or "Unknown"
         departure_time = request.POST.get("departure_time", "").strip() or "00:00"
         arrival_time = request.POST.get("arrival_time", "").strip() or "00:00"
-        days = request.POST.get("days", "Mon,Tue,Wed").strip()
+        
+        # Get days (checkboxes)
+        days_selected = request.POST.getlist("days")
+        days_value = ",".join(days_selected) if days_selected else ""
+        
+        # Get specific date (optional)
+        specific_date_str = request.POST.get("specific_date", "").strip()
+        specific_date = None
+        if specific_date_str:
+            try:
+                specific_date = datetime.strptime(specific_date_str, "%Y-%m-%d").date()
+            except:
+                pass
 
         stop_times = request.POST.getlist("stop_times[]")
-        stops_list = request.POST.getlist("stops[]") or request.POST.getlist("stops")
+        stops_list = request.POST.getlist("stops[]") or []
 
-        stops_string = ",".join([s.strip() for s in (stops_list or []) if s.strip()])
+        stops_string = ",".join([s.strip() for s in stops_list if s.strip()])
 
         def parse_time_str(t):
             try:
@@ -414,53 +528,63 @@ def register_bus(request):
         dep_t = parse_time_str(departure_time)
         arr_t = parse_time_str(arrival_time)
 
-        with transaction.atomic():
-            bus = Bus.objects.create(
-                bus_name=bus_name,
-                registration_number=registration_number,
-                total_seats=total_seats,
-                conductor=conductor,
-            )
-
-            route = Route.objects.create(
-                bus=bus,
-                origin=from_city,
-                destination=to_city,
-                stops=stops_string,
-            )
-
-            # save stops properly
-            for idx, stop_name in enumerate(stops_list):
-                stop_name = stop_name.strip()
-                if not stop_name:
-                    continue
-
-                time_str = stop_times[idx] if idx < len(stop_times) else "00:00"
-                try:
-                    stop_time = datetime.strptime(time_str, "%H:%M").time()
-                except:
-                    stop_time = dtime(0, 0)
-
-                Stop.objects.create(
-                    route=route,
-                    name=stop_name,
-                    time=stop_time,
-                    order=idx
+        try:
+            with transaction.atomic():
+                # Create bus with conductor
+                bus = Bus.objects.create(
+                    bus_name=bus_name,
+                    registration_number=registration_number,
+                    total_seats=total_seats,
+                    conductor=conductor,
+                    ac_type="AC",  # You can add this as a field in form
+                    bus_type="Seater",  # You can add this as a field in form
+                    is_sleeper=False,  # You can add this as a field in form
                 )
 
-            Schedule.objects.create(
-                bus=bus,
-                route=route,
-                departure_time=dep_t,
-                arrival_time=arr_t,
-                days=days,
-            )
+                route = Route.objects.create(
+                    bus=bus,
+                    origin=from_city,
+                    destination=to_city,
+                    stops=stops_string,
+                )
 
-        messages.success(request, "Bus registered successfully.")
-        return redirect("conductor_dashboard")
+                # Save stops properly
+                for idx, stop_name in enumerate(stops_list):
+                    stop_name = stop_name.strip()
+                    if not stop_name:
+                        continue
+
+                    time_str = stop_times[idx] if idx < len(stop_times) else "00:00"
+                    try:
+                        stop_time = datetime.strptime(time_str, "%H:%M").time()
+                    except:
+                        stop_time = dtime(0, 0)
+
+                    Stop.objects.create(
+                        route=route,
+                        name=stop_name,
+                        time=stop_time,
+                        order=idx
+                    )
+
+                # Create schedule with days or specific date
+                Schedule.objects.create(
+                    bus=bus,
+                    route=route,
+                    date=specific_date,  # Will be None if not specified
+                    departure_time=dep_t,
+                    arrival_time=arr_t,
+                    days=days_value if not specific_date else None,  # Only set days if no specific date
+                )
+
+            messages.success(request, "Bus registered successfully.")
+            return redirect("conductor_dashboard")
+            
+        except Exception as e:
+            messages.error(request, f"Error registering bus: {str(e)}")
+            return redirect("register_bus")
 
     return render(request, "main/register_bus.html", {})
-
 
 @login_required(login_url="login")
 @require_POST
@@ -562,11 +686,12 @@ def get_duration(departure, arrival):
     return f"{hours}h {mins}m"
 
 def calculate_price(route, bus):
+    if not route:
+        return 200 
+    
     base = 150
 
-    stops = [route.origin] + [
-        s.strip() for s in route.stops.split(",") if s.strip()
-    ] + [route.destination]
+    stops = [route.origin] + [s.strip() for s in route.stops.split(",") if s.strip()] + [route.destination]
 
     distance = len(stops) * 40
 
@@ -575,7 +700,7 @@ def calculate_price(route, bus):
     if bus.is_sleeper:
         price += price * 0.3
 
-    if bus.is_ac:
+    if bus.ac_type:
         price += price * 0.2
 
     return int(price)

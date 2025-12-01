@@ -1,51 +1,6 @@
-{% load static %}
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bookings | BusBuddy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'main/style.css' %}" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="logo" href="{% url 'main:index' %}">
-        <svg class="logo-mark" viewBox="0 0 120 30" aria-hidden="true" focusable="false">
-          <path d="M0 20 C10 0, 30 0, 40 20 C50 40, 70 40, 80 20 C90 0, 110 0, 120 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span class="logo-text">BusBuddy</span>
-      </a>
+{% extends 'main/base.html' %}
 
-      <!-- Updated navigation -->
-      <nav class="main-nav" aria-label="Main navigation">
-        <ul class="nav-list">
-          <li class="nav-item"><a class="nav-btn" href="{% url 'bookings:bookings' %}">Bookings</a></li>
-          <li class="nav-item"><a class="nav-btn" href="{% url 'main:sector' %}">Sectors</a></li>
-          <li class="nav-item"><a class="nav-btn" href="{% url 'main:connected' %}">Connected</a></li>
-          <li class="nav-item"><a class="nav-btn" href="{% url 'main:who_we_are' %}">Who we are</a></li>
-        </ul>
-      </nav>
-
-      <div class="header-actions">
-        <a class="btn ghost" href="{% url 'main:login' %}">Login</a>
-        <button id="mobile-toggle" class="hamburger" aria-label="Open menu" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </div>
-
-   <!-- mobile menu -->
-<div id="mobile-menu" class="mobile-menu" aria-hidden="true">
-  <ul>
-    <li class="nav-item"><a class="nav-btn" href="{% url 'bookings:bookings' %}">Bookings</a></li>
-          <li class="nav-item"><a class="nav-btn" href="{% url 'main:sector' %}">Sectors</a></li>
-          <li class="nav-item"><a class="nav-btn" href="{% url 'main:connected' %}">Connected</a></li>
-          <li class="nav-item"><a class="nav-btn" href="{% url 'main:who_we_are' %}">Who we are</a></li>
-  </ul>
-</div>   <!-- ✅ correctly closed -->
-
+{% block content %}
 <!-- main content starts here -->
 <main class="booking-page">
   <div class="container">
@@ -53,89 +8,71 @@
       <h1 class="hero-title" style="text-align:center; margin-bottom:10px;">Book Your Bus</h1>
       <p class="hero-text" style="text-align:center; margin-bottom:25px;">Search and book buses across routes instantly.</p>
 
-      <form action="{% url 'search_results' %}" method="get" class="search-form">
-
+      <!-- In search.html, update the form section -->
+<form action="{% url 'search_results' %}" method="get" class="search-form">
   <!-- FROM -->
+   <div class="form-group">
   <label for="id_source">From</label>
-  <input
-    type="text"
-    id="id_source"
-    name="source"
-    placeholder="City / stop"
-    value="{{ request.GET.source|default:'' }}"
-    autocomplete="off"
-  />
-
+  <input type="text" id="id_source" name="source" placeholder="City / stop" value="{{ request.GET.source|default:'' }}" autocomplete="off" />
+  </div>
   <!-- TO -->
+   <div class="form-group">
   <label for="id_destination">To</label>
-  <input
-    type="text"
-    id="id_destination"
-    name="destination"
-    placeholder="City / stop"
-    value="{{ request.GET.destination|default:'' }}"
-    autocomplete="off"
-  />
-
-  <!-- DAY -->
-  <label for="id_day">Day</label>
-  <select id="id_day" name="day">
+  <input type="text" id="id_destination" name="destination" placeholder="City / stop" value="{{ request.GET.destination|default:'' }}" autocomplete="off" />
+  </div>
+  <!-- TRAVEL DATE -->
+   <div class="form-group">
+  <label for="id_travel_date">Travel Date</label>
+  <input type="date" id="id_travel_date" name="travel_date" value="{{ request.GET.travel_date|default:'' }}" />
+  </div>
+  <!-- DAY SELECTION (Alternative to date) -->
+   <div class="form-group">
+  <label for="id_day">OR Select Day</label>
+  <select id="id_day" name="Day">
     <option value="">Any day</option>
-    <option value="Mon" {% if request.GET.day == "Mon" %}selected{% endif %}>Mon</option>
-    <option value="Tue" {% if request.GET.day == "Tue" %}selected{% endif %}>Tue</option>
-    <option value="Wed" {% if request.GET.day == "Wed" %}selected{% endif %}>Wed</option>
-    <option value="Thu" {% if request.GET.day == "Thu" %}selected{% endif %}>Thu</option>
-    <option value="Fri" {% if request.GET.day == "Fri" %}selected{% endif %}>Fri</option>
-    <option value="Sat" {% if request.GET.day == "Sat" %}selected{% endif %}>Sat</option>
-    <option value="Sun" {% if request.GET.day == "Sun" %}selected{% endif %}>Sun</option>
+    <option value="Monday" {% if request.GET.Day == "Monday" %}selected{% endif %}>Monday</option>
+    <option value="Tuesday" {% if request.GET.Day == "Tuesday" %}selected{% endif %}>Tuesday</option>
+    <option value="Wednesday" {% if request.GET.Day == "Wednesday" %}selected{% endif %}>Wednesday</option>
+    <option value="Thursday" {% if request.GET.Day == "Thursday" %}selected{% endif %}>Thursday</option>
+    <option value="Friday" {% if request.GET.Day == "Friday" %}selected{% endif %}>Friday</option>
+    <option value="Saturday" {% if request.GET.Day == "Saturday" %}selected{% endif %}>Saturday</option>
+    <option value="Sunday" {% if request.GET.Day == "Sunday" %}selected{% endif %}>Sunday</option>
   </select>
+   </div>
 
   <!-- AC / Non-AC filter -->
+   <div class="form-group">
   <label for="id_bus_type">AC Type</label>
   <select id="id_bus_type" name="bus_type">
     <option value="" {% if not request.GET.bus_type %}selected{% endif %}>Any</option>
     <option value="AC" {% if request.GET.bus_type == "AC" %}selected{% endif %}>AC</option>
     <option value="Non-AC" {% if request.GET.bus_type == "Non-AC" %}selected{% endif %}>Non-AC</option>
   </select>
+  </div>
 
   <!-- Sleeper/Seater -->
+   <div class="form-group">
   <label for="id_sleeper_type">Seating</label>
   <select id="id_sleeper_type" name="sleeper_type">
     <option value="" {% if not request.GET.sleeper_type %}selected{% endif %}>Any</option>
     <option value="Sleeper" {% if request.GET.sleeper_type == "Sleeper" %}selected{% endif %}>Sleeper</option>
     <option value="Seater" {% if request.GET.sleeper_type == "Seater" %}selected{% endif %}>Seater</option>
   </select>
+  </div>
 
   <!-- Women-safety toggle -->
-  <label for="id_is_woman_safe">
-    <input
-      type="checkbox"
-      id="id_is_woman_safe"
-      name="is_woman_safe"
-      {% if request.GET.is_woman_safe %}checked{% endif %}
-    />
+ 
+  <label for="id_is_woman_safe" style="display: flex; align-items: center; gap: 10px;">
+    <input type="checkbox" id="id_is_woman_safe" name="is_woman_safe" {% if request.GET.is_woman_safe %}checked{% endif %} />
     Women safety
   </label>
+  
 
-  <button type="submit">Search</button>
-  <a href="{% url 'search' %}">Reset</a>
+  <button type="submit" class="btn primary">Search</button>
+  <a href="{% url 'search' %}" class="btn ghost">Reset</a>
 </form>
     </div>
   </div>  
 </main>
-<footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <strong>BusBuddy</strong>
-        <p class="muted">Connecting places.</p>
-      </div>
-
-      <div class="footer-links">
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-        <a href="#">Contact</a>
-      </div>
-    </div>
-  </footer>
-</body>
-</html>
+<!-- main content ends here -->
+{% endblock %}

@@ -22,13 +22,18 @@ class Bus(models.Model):
     total_seats = models.IntegerField()
     driver_name = models.CharField(max_length=100, blank=True, null=True)
     driver_photo = models.ImageField(upload_to="drivers/", null=True, blank=True)
-
+    
+    # ADD THIS FIELD - Missing in your model
+    conductor = models.ForeignKey(Conductor, on_delete=models.CASCADE, related_name='buses', null=True, blank=True)
+    
+    # These can be removed since we have Route model
     origin = models.CharField(max_length=150, blank=True, null=True)
     destination = models.CharField(max_length=150, blank=True, null=True)
-    stops = models.TextField(blank=True, null=True)# comma separated list
+    stops = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.bus_name} ({self.registration_number})"
+
 
 class Route(models.Model):
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='routes')
@@ -39,16 +44,20 @@ class Route(models.Model):
     def __str__(self):
         return f"{self.origin} → {self.destination}"
 
+
 class Schedule(models.Model):
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE, related_name='schedules')
+    route = models.ForeignKey(Route, on_delete=models.CASCADE, related_name='schedules', null=True, blank=True)
+    date = models.DateField(null=True, blank=True)  # ADD THIS for specific date schedules
     departure_time = models.TimeField()
     arrival_time = models.TimeField()
-    days = models.CharField(max_length=50)  # "Mon,Tue,Wed"
+    days = models.CharField(max_length=50, null=True, blank=True)  # Make optional for date-based schedules
 
     def __str__(self):
         return f"{self.bus.bus_name} {self.departure_time} → {self.arrival_time} ({self.days})"
 
 User = get_user_model()
+
 
 class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
@@ -63,6 +72,7 @@ class Booking(models.Model):
     def __str__(self):
         return f"Booking #{self.pk} by {self.user} for {self.schedule}"
 
+
 class Payment(models.Model):
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='payment')
     provider = models.CharField(max_length=50, blank=True)  # 'razorpay', 'stripe'
@@ -73,7 +83,7 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment {self.provider} {self.status} for {self.booking}"
-    
+
 
 from django.db.models import Sum
 def seats_booked_for_schedule(schedule):
@@ -84,12 +94,10 @@ def seats_available(schedule):
     return max(0, schedule.bus.total_seats - seats_booked_for_schedule(schedule))
 
 
-#for stooooopppppppsssssssssssssssssss-----------
 class Stop(models.Model):
     route = models.ForeignKey(Route, related_name="stop_list", on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     time = models.TimeField()
-
     order = models.PositiveIntegerField(default=0)
 
     class Meta:

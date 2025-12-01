@@ -109,14 +109,26 @@ class BusDetailsForm(forms.Form):
     # FIXED: Checkbox list for days
     days = forms.MultipleChoiceField(
         choices=DAYS_CHOICES,
-        widget=forms.CheckboxSelectMultiple
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+        # Add date field for specific date schedules
+    schedule_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'input'}),
+        label='Specific Date (optional)'
     )
 
 
 class BusSearchForm(forms.Form):
     source = forms.CharField(label="From", max_length=100)
     destination = forms.CharField(label="To", max_length=100)
-
+    # Add date field
+    travel_date = forms.DateField(
+        label="Travel Date",
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False
+    )
     bus_type = forms.ChoiceField(
         choices=[('', 'Any'), ('AC', 'AC'), ('Non-AC', 'Non-AC')],
         required=False

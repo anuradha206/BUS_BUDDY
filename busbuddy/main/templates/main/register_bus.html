@@ -11,6 +11,20 @@
 
       <div class="card" style="padding: 30px; border-radius: 12px; background: #0a1525; box-shadow: 0px 4px 14px rgba(0,0,0,0.3);">
 
+  <!-- Add messages display here -->
+  {% if messages %}
+    <div style="margin-bottom: 20px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="padding: 10px; border-radius: 4px; margin-bottom: 10px; 
+                {% if message.tags == 'error' %}background: #ff6b6b; color: white;{% endif %}
+                {% if message.tags == 'success' %}background: #51cf66; color: white;{% endif %}
+                {% if message.tags == 'info' %}background: #339af0; color: white;{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
         <form method="POST" action="">
           {% csrf_token %}
 
@@ -78,6 +92,39 @@ document.getElementById("add-stop").addEventListener("click", function() {
             <label>Departure Time</label>
             <input type="time" name="departure_time" class="form-control" required>
           </div>
+
+          <div class="form-group">
+    <label>Days of Operation</label>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="days" value="Mon"> Monday
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="days" value="Tue"> Tuesday
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="days" value="Wed"> Wednesday
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="days" value="Thu"> Thursday
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="days" value="Fri"> Friday
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="days" value="Sat"> Saturday
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="days" value="Sun"> Sunday
+        </label>
+    </div>
+</div>
+
+<!-- Add specific date field (optional) -->
+<div class="form-group">
+    <label>Specific Date (optional - for one-time trips)</label>
+    <input type="date" name="specific_date" class="form-control">
+</div>
 
           <button type="submit" class="btn primary" style="width:100%; margin-top: 20px;">
             Register Bus

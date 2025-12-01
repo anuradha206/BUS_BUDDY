@@ -1,21 +1,92 @@
-{% load static %}
+{% extends 'main/base.html' %}
 
-<h2>Available Buses</h2>
+{% block content %}
 
-{% if schedules %}
-    {% for s in schedules %}
-        <div class="bus-card">
-            <h3>{{ s.bus.bus_name }} ({{ s.bus.registration_number }})</h3>
-            <p>{{ s.bus.origin }} → {{ s.bus.destination }}</p>
-            <p>Departs: {{ s.departure_time }} | Arrives: {{ s.arrival_time }}</p>
-            <p>Runs on: {{ s.days }}</p>
-            <p>AC Type: {{ s.bus.ac_type }}</p>
-            <p>Type: {{ s.bus.bus_type }}</p>
-            <p>Seats: {{ s.bus.total_seats }}</p>
-            <p>Stops: {{ s.bus.stops }}</p>
-            <a href="/book/{{ s.id }}/">Book</a>
+<div class="container">
+  {% if schedules %}
+  
+    <p class="hero-text" style="text-align:center;">
+      Found {{ schedules|length }} bus{{ schedules|length|pluralize:"es" }}
+      {% if origin %}from {{ origin }}{% endif %}
+      {% if destination %}to {{ destination }}{% endif %}
+      {% if travel_date %}on {{ travel_date }}{% endif %}
+    </p>
+
+    <div class="buses-list">
+
+      {% for schedule in schedules %}
+      <div class="card bus-card">
+
+        <div class="card-header">
+          <h3>{{ schedule.bus.name }} ({{ schedule.bus.registration_number|default:"N/A" }})</h3>
+          <span class="badge">{{ schedule.bus.bus_type }} | {{ schedule.bus.ac_type }}</span>
         </div>
-    {% endfor %}
-{% else %}
-    <p>No buses found</p>
-{% endif %}
+
+        <div class="card-body">
+          <p><strong>Route:</strong> {{ schedule.route.start }} → {{ schedule.route.end }}</p>
+          <p><strong>Departure:</strong> {{ schedule.time }}</p>
+          <p><strong>Arrival:</strong> {{ schedule.arrival_time }}</p>
+          <p><strong>Duration:</strong> {{ schedule.duration }}</p>
+
+          {% if schedule.date %}
+            <p><strong>Date:</strong> {{ schedule.date }}</p>
+          {% elif schedule.days %}
+            <p><strong>Runs on:</strong> {{ schedule.days }}</p>
+          {% endif %}
+
+          <p><strong>Available Seats:</strong> {{ schedule.available }}</p>
+          <p><strong>Price per seat:</strong> ₹{{ schedule.price }}</p>
+          <p><strong>Driver:</strong> {{ schedule.bus.driver_name|default:"Not specified" }}</p>
+        </div>
+
+        <div class="card-cta">
+          {% if user.is_authenticated %}
+          <form method="POST" action="{% url 'start_booking' schedule.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="price_per_seat" value="{{ schedule.price }}">
+
+            <label>Select seats:</label>
+            <input type="number" name="seats" value="1" min="1" max="{{ schedule.available }}">
+
+            <button type="submit" class="btn primary">
+              Book Now (₹<span id="total-{{ schedule.id }}">{{ schedule.price }}</span>)
+            </button>
+          </form>
+
+          <script>
+            const seatInput{{ schedule.id }} = document.querySelector(
+              'form[action$="{{ schedule.id }}"] input[name="seats"]'
+            );
+            seatInput{{ schedule.id }}.addEventListener('input', function () {
+              const price = {{ schedule.price }};
+              document.getElementById('total-{{ schedule.id }}').textContent =
+                price * this.value;
+            });
+          </script>
+
+          {% else %}
+          <p style="color:#ff6b6b; margin-top:15px;">
+            <a href="{% url 'login' %}">Login</a> to book this bus
+          </p>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+
+    <p class="hero-text" style="text-align:center;">
+      No buses found for your search. Try different cities, dates, or stops.
+    </p>
+
+    <div style="text-align:center;">
+      <a href="{% url 'search' %}" class="btn primary">Search Again</a>
+    </div>
+
+  {% endif %}
+</div>
+
+{% endblock %}

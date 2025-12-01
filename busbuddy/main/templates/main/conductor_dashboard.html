@@ -6,20 +6,24 @@
 <p>Here are your buses and schedules.</p>
 
 {% if buses %}
-    {% for b in buses %}
+    {% for bus_data in buses %}
         <div style="padding:10px;border:1px solid #ccc;margin-bottom:20px;">
-            <h3>{{ b.bus.bus_name }}</h3>
-            <p>Registration: {{ b.bus.registration_number }}</p>
-            <p>Total seats: {{ b.bus.total_seats }}</p>
+            <h3>{{ bus_data.bus.bus_name }}</h3>
+            <p>Registration: {{ bus_data.bus.registration_number }}</p>
+            <p>Total seats: {{ bus_data.bus.total_seats }}</p>
+            <p>AC Type: {{ bus_data.bus.ac_type }}</p>
+            <p>Bus Type: {{ bus_data.bus.bus_type }}</p>
 
             <h4>Schedules</h4>
-            {% if b.schedules %}
+            {% if bus_data.schedules %}
                 <ul>
-                    {% for s in b.schedules %}
+                    {% for schedule in bus_data.schedules %}
                         <li>
-                            <strong>{{ s.route.start }} → {{ s.route.end }}</strong><br>
-                            Time: {{ s.time }}<br>
-                            Available seats: {{ s.available }}<br>
+                            <strong>{{ schedule.route.start }} → {{ schedule.route.end }}</strong><br>
+                            Time: {{ schedule.time }}<br>
+                            Available seats: {{ schedule.available }}<br>
+                            Days: {{ schedule.raw_schedule.days }}<br>
+                            <a href="{% url 'start_booking' schedule.id %}">View Bookings</a>
                         </li>
                     {% endfor %}
                 </ul>
@@ -32,6 +36,6 @@
     <p>You have not registered any buses yet.</p>
 {% endif %}
 
-<a href="{% url 'register_bus' %}">Register a new bus</a>
+<a href="{% url 'register_bus' %}" class="btn primary">Register a new bus</a>
 
 {% endblock %}
