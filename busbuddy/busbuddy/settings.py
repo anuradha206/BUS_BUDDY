@@ -141,3 +141,5 @@ LOGIN_REDIRECT_URL = 'index'
 import os as _os
 ANTHROPIC_API_KEY = _os.environ.get('ANTHROPIC_API_KEY', '')
 AI_ENABLED_MODELS = _os.environ.get('AI_ENABLED_MODELS', 'claude-haiku-4.5').split(',')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
